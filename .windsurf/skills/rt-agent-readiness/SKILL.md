@@ -97,3 +97,18 @@ Readiness is staged across five levels. Each level reflects what agents can acco
   - Agents can remediate with a PR
   - Have clear, repo-local evidence
 
+
+## Optional remediation workflow
+
+This pack includes an optional workflow:
+
+- `/rt-agent-readiness-remediate`
+
+It is safe-by-default:
+- It generates a remediation plan (no changes)
+- Applying changes requires an explicit `--apply` flag
+- The apply mode only scaffolds *missing* repo hygiene assets (docs/templates/config)
+  and does not overwrite existing files
+
+The goal is to remove common friction for agents (unclear commands, missing templates, missing ownership)
+without risking unintended changes to product code.

@@ -4,47 +4,38 @@ This file is written for autonomous and semi-autonomous coding agents as well as
 
 ## Purpose
 
-- What this repository does (1–2 paragraphs)
-- What “done” means for changes (tests, docs, risk checks)
+**Repository:** `{{REPO_NAME}}`
+
+{{REPO_DESCRIPTION}}
 
 ## Quickstart
 
-```bash
-# 1) Install dependencies
-# 2) Configure environment
-# 3) Run the app
-# 4) Run tests
-```
+{{QUICKSTART_BLOCK}}
 
-## Repo map (high-level)
+## Repository map (high-level)
 
-- `src/` – ...
-- `docs/` – ...
-- `infra/` – ...
+{{REPO_MAP_BLOCK}}
 
 ## Standard commands
 
-- Build: `...`
-- Lint: `...`
-- Typecheck: `...`
-- Test: `...`
-- Format: `...`
+{{COMMANDS_BLOCK}}
 
 ## Development loops
 
-- Small change loop:
-  1. ...
-  2. ...
-  3. ...
+**Small-change loop (default):**
+1. Understand the intent and constraints (read relevant docs, confirm scope)
+2. Make the smallest coherent change
+3. Run the standard verification commands
+4. Update docs and tests as needed
+5. Summarize risk and verification evidence
 
 ## CI expectations
 
-- What runs on PR
-- How to reproduce locally
+{{CI_BLOCK}}
 
 ## Risk & safety notes
 
-- How to avoid secrets in logs
-- How to handle migrations
-- Rollout / rollback expectations
-
+- Never write secrets into code, docs, or logs
+- Prefer additive changes that are easy to revert
+- For migrations / data changes, include a rollback plan
+- If unsure about a change’s safety, stop and ask for review

@@ -1,0 +1,39 @@
+---
+name: Bug report
+description: Report a defect with reproducible steps
+labels: [bug]
+---
+
+# Bug report
+
+## Summary
+
+What is the problem?
+
+## Impact
+
+Who/what is impacted? Severity?
+
+## Steps to reproduce
+
+1. ...
+2. ...
+3. ...
+
+## Expected behavior
+
+What should happen?
+
+## Actual behavior
+
+What happened?
+
+## Logs / evidence
+
+Paste relevant logs, screenshots, or stack traces (remove secrets!).
+
+## Environment
+
+- OS:
+- Version/commit:
+- Other context:

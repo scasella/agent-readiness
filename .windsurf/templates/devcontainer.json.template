@@ -1,0 +1,12 @@
+{
+  "name": "{{REPO_NAME}}",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "features": {
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": []
+    }
+  },
+  "postCreateCommand": "echo 'Customize this devcontainer for your repo.'"
+}

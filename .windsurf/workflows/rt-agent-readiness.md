@@ -55,3 +55,12 @@ Supported keys (all optional):
 
 - Some governance signals require repo-host settings. If local evaluation can’t verify them, they will be marked **Skipped**.
 - This pack is assessment-only by default. It writes only under `artifacts/rt-agent-readiness/`.
+
+## Next step (optional)
+
+If you want to move the repo toward the next maturity level, run:
+
+- `/rt-agent-readiness-remediate`
+
+That workflow generates a remediation plan and can optionally scaffold low-risk repo hygiene assets
+(docs/templates/config) **only if explicitly approved**.

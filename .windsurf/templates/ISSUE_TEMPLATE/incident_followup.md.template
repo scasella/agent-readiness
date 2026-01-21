@@ -1,0 +1,26 @@
+---
+name: Incident follow-up
+description: Track action items from an incident or outage
+labels: [incident]
+---
+
+# Incident follow-up
+
+## Incident summary
+
+- Date/time:
+- Impact:
+- Root cause (if known):
+
+## Action items
+
+- [ ] ...
+- [ ] ...
+
+## Verification
+
+How will we confirm the issue is fully resolved?
+
+## Runbook updates
+
+Link to the runbook / playbook changes required.

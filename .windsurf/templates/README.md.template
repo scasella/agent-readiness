@@ -1,0 +1,15 @@
+# {{REPO_NAME}}
+
+{{REPO_DESCRIPTION}}
+
+## Quickstart
+
+{{QUICKSTART_BLOCK}}
+
+## Development
+
+See `AGENTS.md` for agent- and human-friendly development workflows.
+
+## License
+
+{{LICENSE_BLOCK}}

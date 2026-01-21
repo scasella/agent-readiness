@@ -1,0 +1,12 @@
+# CODEOWNERS
+#
+# Replace placeholder owners with real GitHub teams/users.
+#
+# Reference:
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+* @{{DEFAULT_OWNER}}
+
+# Examples:
+# /infra/ @platform-team
+# /docs/ @technical-writers

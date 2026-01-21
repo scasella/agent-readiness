@@ -1,0 +1,31 @@
+# Contributing
+
+Thanks for contributing to **{{REPO_NAME}}**.
+
+This document standardizes how changes are proposed, verified, and reviewed.
+
+## Development setup
+
+{{SETUP_BLOCK}}
+
+## Standard commands
+
+{{COMMANDS_BLOCK}}
+
+## Pull requests
+
+When opening a PR:
+- Provide a clear summary and motivation
+- Include a risk assessment and rollback notes for any risky change
+- Include verification evidence (commands run, test outputs)
+- Keep PRs as small and coherent as possible
+
+## Coding standards
+
+- Follow the repo’s formatter and linter
+- Add tests for behavior changes
+- Update docs when commands or behavior changes
+
+## Getting help
+
+If you are unsure which owner to contact, check CODEOWNERS and open an issue.

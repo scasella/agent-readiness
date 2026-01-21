@@ -1,0 +1,29 @@
+# Security Policy
+
+This document describes how to report security issues for **{{REPO_NAME}}**.
+
+## Reporting a vulnerability
+
+- Do not open a public issue for security vulnerabilities.
+- Report suspected vulnerabilities to the security team:
+  - **Email:** security@risktech.example
+  - **Slack:** #security (if available)
+
+Include:
+- A clear description of the issue
+- Steps to reproduce
+- Impact assessment
+- Any suggested mitigation
+
+## Disclosure
+
+Risk Tech will acknowledge reports and work with reporters on responsible disclosure timelines.
+
+## Supported versions
+
+- Security fixes are applied to actively maintained branches.
+
+## Dependency and secret hygiene
+
+- Do not commit secrets.
+- Rotate credentials immediately if exposure is suspected.

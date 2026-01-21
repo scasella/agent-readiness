@@ -1,20 +1,36 @@
 name: rt-agent-readiness
 display_name: "Risk Tech – Agent Readiness"
-version: "1.0.0"
+version: "1.1.0"
 description: >
   A Windsurf-native assessment pack that evaluates how ready a repository is for
-  autonomous, agent-driven development. Produces a professional HTML + Markdown
-  report and a machine-readable JSON scorecard with prioritized recommendations.
+  agent-driven development.
+
+  It produces a visually polished HTML report, a Markdown report, and a
+  machine-readable JSON scorecard with prioritized recommendations.
+
+  The pack also includes an optional, safe-by-default remediation workflow that
+  can scaffold high-leverage repo hygiene assets (docs/templates/config) to help
+  teams progress toward the next maturity level.
+
 entrypoints:
   - command: "/rt-agent-readiness"
     workflow: ".windsurf/workflows/rt-agent-readiness.md"
+
+  - command: "/rt-agent-readiness-remediate"
+    workflow: ".windsurf/workflows/rt-agent-readiness-remediate.md"
+
 outputs:
   - artifacts/rt-agent-readiness/**/outputs/readiness.json
   - artifacts/rt-agent-readiness/**/outputs/report.html
   - artifacts/rt-agent-readiness/**/outputs/report.md
+  - artifacts/rt-agent-readiness/**/outputs/remediation_plan.md
+  - artifacts/rt-agent-readiness/**/outputs/remediation_plan.json
+
 policies:
   network: "offline-by-default"
   external_tool_servers: "not-used"
+
 notes:
   - "Designed for enterprise repos. Evaluation is deterministic and local where possible."
   - "Some governance signals may require repo-host metadata; those are marked as skipped."
+  - "Remediation is opt-in. By default it generates a plan; applying changes requires an explicit flag."

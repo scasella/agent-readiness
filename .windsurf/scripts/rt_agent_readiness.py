@@ -19,6 +19,7 @@ import fnmatch
 import hashlib
 import html
 import json
+import math
 import os
 import re
 import subprocess
@@ -2365,11 +2366,20 @@ def pick_opportunities(criteria_results: List[CriterionResult], top_n: int = 3) 
 
 
 def pick_action_items(criteria_results: List[CriterionResult], level_achieved: int, top_n: int = 3) -> List[Dict[str, Any]]:
-    next_level = min(level_achieved + 1, 5)
+    """Pick the highest-leverage action items to unlock the *next* maturity level.
+
+    Readiness progression is gated: to unlock level N+1, the repo must reach ≥80%
+    on level N criteria. Therefore the most useful action items focus on the
+    current *blocking* level (the achieved level) rather than the next level.
+    """
+
     if level_achieved >= 5:
         return []
-    candidates = [r for r in criteria_results if r.level == next_level and r.status == "fail"]
-    # Prefer higher weight first
+
+    blocking_level = level_achieved
+    candidates = [r for r in criteria_results if r.level == blocking_level and r.status == "fail"]
+
+    # Prefer higher weight first (and keep output stable)
     candidates.sort(key=lambda r: (-r.weight, r.pillar, r.id))
     items: List[Dict[str, Any]] = []
     for r in candidates[:top_n]:
@@ -2411,7 +2421,12 @@ def render_markdown(meta: RepoMeta, overall: Dict[str, Any], level_scores: List[
     lines.append("")
     lines.append("## Executive summary")
     lines.append("")
-    lines.append(f"- **Level achieved:** **{compute_level_achieved(level_scores)} / 5**")
+    level_achieved = compute_level_achieved(level_scores)
+    blocking_level = level_achieved if level_achieved < 5 else 5
+    target_level = min(blocking_level + 1, 5)
+    lines.append(f"- **Level achieved:** **{level_achieved} / 5**")
+    if level_achieved < 5:
+        lines.append(f"- **Progression target:** unlock **Level {target_level}** by reaching **≥80%** on **Level {blocking_level}** criteria")
     lines.append(f"- **Overall pass rate:** **{overall['percent']}%** ({overall['passed']}/{overall['total']})")
     lines.append("")
     if strengths:
@@ -2495,6 +2510,75 @@ def render_html(meta: RepoMeta, overall: Dict[str, Any], level_scores: List[Dict
     languages = html.escape(", ".join(meta.detected_languages or []))
 
     level_achieved = compute_level_achieved(level_scores)
+    blocking_level = level_achieved if level_achieved < 5 else 5
+    target_level = min(blocking_level + 1, 5)
+
+    def donut_svg(pct: int) -> str:
+        r = 36
+        c = 2 * math.pi * r
+        offset = c * (1 - (pct / 100))
+        return f"""
+        <svg class=\"donut\" width=\"90\" height=\"90\" viewBox=\"0 0 100 100\" role=\"img\" aria-label=\"Overall pass rate\">
+          <circle cx=\"50\" cy=\"50\" r=\"{r}\" fill=\"none\" stroke=\"rgba(255,255,255,0.12)\" stroke-width=\"10\"/>
+          <circle cx=\"50\" cy=\"50\" r=\"{r}\" fill=\"none\" stroke=\"rgba(120,180,255,0.95)\" stroke-width=\"10\" stroke-linecap=\"round\"
+            stroke-dasharray=\"{c:.2f}\" stroke-dashoffset=\"{offset:.2f}\" transform=\"rotate(-90 50 50)\"/>
+          <text x=\"50\" y=\"54\" text-anchor=\"middle\" font-size=\"18\" font-weight=\"700\" fill=\"var(--text)\">{pct}%</text>
+        </svg>
+        """
+
+    def radar_svg(labels: List[str], values: List[int]) -> str:
+        # Inline SVG radar chart (single-file report; no external assets)
+        size = 260
+        cx = cy = size // 2
+        radius = 90
+        n = max(1, len(values))
+
+        def pt(i: int, r: float) -> Tuple[float, float]:
+            ang = (-math.pi / 2.0) + (2 * math.pi * (i / n))
+            return (cx + r * math.cos(ang), cy + r * math.sin(ang))
+
+        # Grid rings
+        rings = [20, 40, 60, 80, 100]
+        grid_paths: List[str] = []
+        for p in rings:
+            rr = radius * (p / 100)
+            pts = [pt(i, rr) for i in range(n)]
+            grid_paths.append(" ".join([f"{x:.1f},{y:.1f}" for x, y in pts]))
+
+        # Axes
+        axes = []
+        for i in range(n):
+            x, y = pt(i, radius)
+            axes.append(f"<line x1=\"{cx}\" y1=\"{cy}\" x2=\"{x:.1f}\" y2=\"{y:.1f}\"/>")
+
+        # Data polygon
+        data_pts = [pt(i, radius * (max(0, min(100, values[i])) / 100)) for i in range(n)]
+        data_path = " ".join([f"{x:.1f},{y:.1f}" for x, y in data_pts])
+
+        # Labels
+        label_elems = []
+        for i, lbl in enumerate(labels):
+            x, y = pt(i, radius + 18)
+            anchor = "middle"
+            if x < cx - 10:
+                anchor = "end"
+            elif x > cx + 10:
+                anchor = "start"
+            short = lbl
+            label_elems.append(f"<text x=\"{x:.1f}\" y=\"{y:.1f}\" text-anchor=\"{anchor}\">{html.escape(short)}</text>")
+
+        return f"""
+        <svg class=\"radar\" width=\"{size}\" height=\"{size}\" viewBox=\"0 0 {size} {size}\" role=\"img\" aria-label=\"Pillar pass rate radar chart\">
+          <g class=\"grid\">
+            {''.join([f'<polygon points="{p}"/>' for p in grid_paths])}
+            {''.join(axes)}
+            <polygon class=\"data\" points=\"{data_path}\"/>
+          </g>
+          <g class=\"labels\">
+            {''.join(label_elems)}
+          </g>
+        </svg>
+        """
 
     def pill(pct: int) -> str:
         return f'<span class="pill">{pct}%</span>'
@@ -2547,9 +2631,15 @@ def render_html(meta: RepoMeta, overall: Dict[str, Any], level_scores: List[Dict
       box-shadow: var(--shadow);
     }
     .card h2 { margin: 0 0 10px; font-size: 15px; letter-spacing: 0.2px; }
-    .kpi { display: flex; align-items: baseline; gap: 10px; }
+    .kpi { display: flex; align-items: center; gap: 12px; }
     .kpi .big { font-size: 34px; font-weight: 700; }
     .kpi .sub { color: var(--muted); font-size: 13px; }
+    .donut { display: block; }
+    .radar { display: block; width: 100%; max-width: 320px; margin: 0 auto; }
+    .radar .grid polygon { fill: none; stroke: var(--line); stroke-width: 1; }
+    .radar .grid line { stroke: var(--line); stroke-width: 1; }
+    .radar .grid polygon.data { fill: rgba(120,180,255,0.20); stroke: rgba(120,180,255,0.95); stroke-width: 2; }
+    .radar .labels text { fill: var(--muted); font-size: 10px; }
     .row { display: flex; justify-content: space-between; gap: 10px; align-items: center; margin: 8px 0; }
     .bar { height: 10px; width: 100%; background: rgba(255,255,255,0.08); border-radius: 999px; overflow: hidden; }
     .bar > i { display:block; height: 100%; background: rgba(120,180,255,0.9); width: 0%; }
@@ -2603,6 +2693,12 @@ def render_html(meta: RepoMeta, overall: Dict[str, Any], level_scores: List[Dict
             <td style="text-align:right">{pct}%</td>
           </tr>
         """
+
+    # Fixed-order pillar radar (stable across runs)
+    pillar_order = [p["name"] for p in PILLARS]
+    pillar_map = {ps["pillar"]: int(ps["percent"]) for ps in pillar_scores}
+    pillar_values = [int(pillar_map.get(n, 0)) for n in pillar_order]
+    pillar_radar = radar_svg(pillar_order, pillar_values)
 
     strengths_html = ""
     if strengths:
@@ -2714,8 +2810,12 @@ def render_html(meta: RepoMeta, overall: Dict[str, Any], level_scores: List[Dict
       <div class="card">
         <h2>Executive summary</h2>
         <div class="kpi">
-          <div class="big">L{level_achieved}</div>
-          <div class="sub">Level achieved (out of 5) · Overall pass rate <b>{overall['percent']}%</b> ({overall['passed']}/{overall['total']})</div>
+          {donut_svg(int(overall['percent']))}
+          <div>
+            <div class="big">L{level_achieved}</div>
+            <div class="sub">Level achieved (out of 5) · Overall pass rate <b>{overall['percent']}%</b> ({overall['passed']}/{overall['total']})</div>
+            {f'<div class="muted" style="margin-top:6px">Target: unlock <b>L{target_level}</b> by reaching <b>≥80%</b> on <b>L{blocking_level}</b> criteria</div>' if level_achieved < 5 else ''}
+          </div>
         </div>
         <div style="margin-top: 12px" class="grid three">
           <div class="card" style="box-shadow:none; padding: 12px; background: rgba(0,0,0,0.12);">
@@ -2751,6 +2851,11 @@ def render_html(meta: RepoMeta, overall: Dict[str, Any], level_scores: List[Dict
             {pillar_rows}
           </tbody>
         </table>
+
+        <div style="height:12px"></div>
+        <h2>Pillar radar</h2>
+        <p class="muted" style="margin-top:0">Pass rate by pillar (skipped criteria excluded from denominators).</p>
+        {pillar_radar}
       </div>
     </div>
 
@@ -2857,7 +2962,7 @@ def main() -> int:
     readiness = {
         "framework": {
             "name": "Risk Tech – Agent Readiness",
-            "version": "1.0.0",
+            "version": "1.1.0",
             "pillars": PILLARS,
             "levels": LEVELS,
             "scoring": {
@@ -2870,6 +2975,8 @@ def main() -> int:
         "scores": {
             "overall": overall,
             "level_achieved": level_achieved,
+            "blocking_level": level_achieved if level_achieved < 5 else 5,
+            "next_level_target": min((level_achieved if level_achieved < 5 else 5) + 1, 5),
             "levels": level_scores,
             "pillars": pillar_scores,
         },

@@ -1,0 +1,15 @@
+# gitleaks configuration (starter)
+#
+# This is a minimal baseline. Tune allowlists and rules to your environment.
+#
+# Reference: https://github.com/gitleaks/gitleaks
+
+title = "Risk Tech baseline"
+
+[allowlist]
+# Allow example env templates
+paths = [
+  "\.env\.example$",
+  "\.env\.template$",
+  "\.env\.sample$",
+]

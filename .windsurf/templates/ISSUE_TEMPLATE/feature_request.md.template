@@ -1,0 +1,30 @@
+---
+name: Feature request
+description: Propose a feature or improvement
+labels: [enhancement]
+---
+
+# Feature request
+
+## Problem
+
+What problem are we trying to solve?
+
+## Proposed solution
+
+Describe the solution at a high level.
+
+## Alternatives
+
+What alternatives did you consider?
+
+## Risks and considerations
+
+- Security / privacy considerations
+- Operational considerations
+- Rollout / rollback considerations
+
+## Acceptance criteria
+
+- [ ] ...
+- [ ] ...
