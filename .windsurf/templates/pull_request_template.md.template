@@ -1,0 +1,27 @@
+# Summary
+
+<!-- What changed and why? -->
+
+## Risk assessment
+
+- [ ] No data model changes
+- [ ] Safe behavior change
+- [ ] Includes migration (describe below)
+
+## Verification
+
+- [ ] Unit tests: `...`
+- [ ] Integration tests: `...`
+- [ ] Lint/typecheck: `...`
+
+## Rollout / rollback
+
+- Rollout: ...
+- Rollback: ...
+
+## Observability
+
+- Logs: ...
+- Metrics: ...
+- Alerts impacted: ...
+

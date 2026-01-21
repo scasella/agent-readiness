@@ -1,0 +1,20 @@
+name: rt-agent-readiness
+display_name: "Risk Tech – Agent Readiness"
+version: "1.0.0"
+description: >
+  A Windsurf-native assessment pack that evaluates how ready a repository is for
+  autonomous, agent-driven development. Produces a professional HTML + Markdown
+  report and a machine-readable JSON scorecard with prioritized recommendations.
+entrypoints:
+  - command: "/rt-agent-readiness"
+    workflow: ".windsurf/workflows/rt-agent-readiness.md"
+outputs:
+  - artifacts/rt-agent-readiness/**/outputs/readiness.json
+  - artifacts/rt-agent-readiness/**/outputs/report.html
+  - artifacts/rt-agent-readiness/**/outputs/report.md
+policies:
+  network: "offline-by-default"
+  external_tool_servers: "not-used"
+notes:
+  - "Designed for enterprise repos. Evaluation is deterministic and local where possible."
+  - "Some governance signals may require repo-host metadata; those are marked as skipped."

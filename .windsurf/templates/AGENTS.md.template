@@ -1,0 +1,50 @@
+# AGENTS.md
+
+This file is written for autonomous and semi-autonomous coding agents as well as humans.
+
+## Purpose
+
+- What this repository does (1–2 paragraphs)
+- What “done” means for changes (tests, docs, risk checks)
+
+## Quickstart
+
+```bash
+# 1) Install dependencies
+# 2) Configure environment
+# 3) Run the app
+# 4) Run tests
+```
+
+## Repo map (high-level)
+
+- `src/` – ...
+- `docs/` – ...
+- `infra/` – ...
+
+## Standard commands
+
+- Build: `...`
+- Lint: `...`
+- Typecheck: `...`
+- Test: `...`
+- Format: `...`
+
+## Development loops
+
+- Small change loop:
+  1. ...
+  2. ...
+  3. ...
+
+## CI expectations
+
+- What runs on PR
+- How to reproduce locally
+
+## Risk & safety notes
+
+- How to avoid secrets in logs
+- How to handle migrations
+- Rollout / rollback expectations
+
